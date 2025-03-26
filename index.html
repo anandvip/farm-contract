@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Income Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c7a4d;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background-color: #2c7a4d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #236240;
+        }
+
+        .results {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .results h2 {
+            color: #2c7a4d;
+            margin-bottom: 1rem;
+        }
+
+        .result-item {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .result-label {
+            font-weight: 600;
+        }
+
+        .error {
+            color: #d9534f;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 0.5rem;
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Farm Income Calculator</h1>
+        
+        <div class="form-group">
+            <label for="totalKanals">Total Kanals:</label>
+            <input type="number" id="totalKanals" placeholder="Enter total kanals" min="0" step="any">
+            <div id="kanalError" class="error"></div>
+        </div>
+        
+        <div class="form-group">
+            <label for="contractAmount">Contract Amount (INR):</label>
+            <input type="number" id="contractAmount" placeholder="Enter contract amount in INR" min="0" step="any">
+            <div id="amountError" class="error"></div>
+        </div>
+        
+        <button onclick="calculateIncome()">Calculate Income</button>
+        
+        <div id="results" class="results">
+            <h2>Calculation Results</h2>
+            
+            <div class="result-item">
+                <span class="result-label">Per Kanal Rate:</span>
+                <span id="perKanalRate"></span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">Total Annual Income:</span>
+                <span id="annualIncome"></span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">Half-Yearly Income:</span>
+                <span id="halfYearlyIncome"></span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">Monthly Income:</span>
+                <span id="monthlyIncome"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateIncome() {
+            // Clear previous errors
+            document.getElementById('kanalError').textContent = '';
+            document.getElementById('amountError').textContent = '';
+            
+            // Get input values
+            const totalKanals = parseFloat(document.getElementById('totalKanals').value);
+            const contractAmount = parseFloat(document.getElementById('contractAmount').value);
+            
+            // Validate inputs
+            let hasError = false;
+            
+            if (isNaN(totalKanals) || totalKanals <= 0) {
+                document.getElementById('kanalError').textContent = 'Please enter a valid number of kanals';
+                hasError = true;
+            }
+            
+            if (isNaN(contractAmount) || contractAmount <= 0) {
+                document.getElementById('amountError').textContent = 'Please enter a valid contract amount';
+                hasError = true;
+            }
+            
+            if (hasError) {
+                document.getElementById('results').style.display = 'none';
+                return;
+            }
+            
+            // Perform calculations
+            const kanalsPerAcre = 8;
+            const perKanalRate = contractAmount / kanalsPerAcre;
+            const annualIncome = perKanalRate * totalKanals;
+            const halfYearlyIncome = annualIncome / 2;
+            const monthlyIncome = annualIncome / 12;
+            
+            // Display results
+            document.getElementById('perKanalRate').textContent = `₹${perKanalRate.toLocaleString('en-IN', {maximumFractionDigits: 2})}`;
+            document.getElementById('annualIncome').textContent = `₹${annualIncome.toLocaleString('en-IN', {maximumFractionDigits: 2})}`;
+            document.getElementById('halfYearlyIncome').textContent = `₹${halfYearlyIncome.toLocaleString('en-IN', {maximumFractionDigits: 2})}`;
+            document.getElementById('monthlyIncome').textContent = `₹${monthlyIncome.toLocaleString('en-IN', {maximumFractionDigits: 2})}`;
+            
+            // Show results section
+            document.getElementById('results').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
